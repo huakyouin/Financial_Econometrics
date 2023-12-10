@@ -1,28 +1,5 @@
-# 金融计量学 HW3
-
-23210980044 加兴华
-
-![image-20231207223804670](https://s2.loli.net/2023/12/07/MstFD3u4iVw17CT.png)
-$$
-\begin{align}
-Ornstei-Uhlenbeck\ process: & \quad X_t=e^{ct}X_0+\sigma e^{ct}\int_{0}^{t} e^{-cs}dB_s, \\
-let & \quad Z_t=\int_{0}^{t} e^{-cs}dB_s,\\
-& \quad Z_t  = \lim \sum{e^{-ct_{i-1}}\Delta_iB} \sim \lim N(0,\sum{e^{-ct_{i-1}}\Delta_i})\quad (B_s \sim N(0,s) \&独立增量)\\
-\therefore & \quad Z_t \sideset{}{}\sim^{L_2}  N(0, \int_{0}^{t} e^{-cs}ds)=N(0,\frac{1-e^{-2ct}}{2c}) \\
-\therefore & \quad X_t \sim N(e^{ct}X_0,\sigma ^2 e^{2ct}\frac{1-e^{-2ct}}{2c}) = N(0,\sigma ^2 \frac{e^{2ct}-1}{2c}) \quad (取X_0=0时)\\
-显然\{X_t\}的任意FIDIS服从高斯分布,\; \therefore& \quad \{X_t\}为高斯过程且均值为0;\\
-& \quad c(t,s)=Cov(X_t,X_s)=E(X_tX_s)-EX_tEX_s=E(X_tX_s)\\
-此外，& \quad Z_t-Z_s=\lim \sum_{t_0=s}^{t_n=t}{e^{-ct_{i-1}}\Delta_iB}由B_t独立增量可推仍然独立增量 \\
-\therefore & \quad c(t,s)=\sigma^2e^{ct+cs}E(Z_tZ_s)=\sigma^2e^{ct+cs}(EZ_s^2+EZ_sEZ_{t-s})=\sigma^2e^{c(t+s)}\frac{1-e^{-2cs}}
-{2c}\\
-\therefore & \quad c(t,s)=\frac{\sigma^2}{2c}(e^{c(t+s)}-e^{c(t-s)})
-\end{align}
-$$
-
-
-![image-20231208120919865](https://s2.loli.net/2023/12/08/lkwSPALCseiDuY1.png)
-
-```R
+```{R Q2 }   
+## question2
 driftBt<-function( n, drift, var=1) {
   # n: 轨迹点的数量
   # drift: 漂移参数
@@ -36,9 +13,6 @@ driftBt<-function( n, drift, var=1) {
   drift_Bt <- Bt + offset
   return(drift_Bt)
 }
-```
-
-```R
 n <- 100
 q <- 0.1
 repeat_time <- 1000
@@ -53,13 +27,7 @@ for (i in 2:repeat_time) {
 lines(1:n,0.1*1:n,col='red')
 ```
 
-![Rplot](https://s2.loli.net/2023/12/08/uV3iPXsWqJYG2rh.png)
-
-
-
-![image-20231208120937207](https://s2.loli.net/2023/12/08/km5quJWvFHczjVd.png)
-
-```R
+```{R Q3}
 simulate_and_ptail<- function(n_simulations,n_repeats) {
   probs<-matrix(nrow = 4, ncol = n_repeats)
   for ( i in 1:n_repeats) {
@@ -108,22 +76,10 @@ lines(n_simulations,variance[, 3], col = "green")
 lines(n_simulations,variance[, 4], col = "purple")
 legend("topright", legend = c("Method 1", "Method 2", "Method 3", "Method 4"), col = c("red", "blue", "green", "purple"), lty = 1)
 
-
 ```
 
-output:
 
-<img src="https://s2.loli.net/2023/12/08/z7SmfHWxnviXrLp.png" alt="image-20231208203536213" style="zoom:50%;" />
-
-<img src="https://s2.loli.net/2023/12/08/uRqX8WtNxPy2OCU.png" alt="image-20231208203550637" style="zoom:50%;" />
-
-以上图表为各同样本容量重复实验20次的结果，从方差来看方法二的模拟方差下降最快，从成本角度考虑是最优的。
-
-
-
-![image-20231208120946094](https://s2.loli.net/2023/12/08/FG4et7WN2cqdIKP.png)
-
-```R
+```{R Q4}
 ## 蒙特卡洛方法模拟
 MC_simulate_mean<- function(n_simulations,h,f) {
   samples <- f(n_simulations)
@@ -182,14 +138,3 @@ myplot(c(100,200,300,400,500,1000,2000,3000,4000,5000),h1)
 myplot(c(100,200,300,400,500,1000,2000,3000,4000,5000),h2)
 myplot(c(100,200,300,400,500,1000,2000,3000,4000,5000),h3)
 ```
-
-在df=10，θ=0，σ=0.5设定下，均值估计的方差如下：
-
-<img src="https://s2.loli.net/2023/12/09/D3T5biquhaNogRI.png" alt="image-20231209002008302" style="zoom:50%;" />
-
-<img src="https://s2.loli.net/2023/12/09/ge2Wz5dckOfXGVa.png" alt="image-20231209002026219" style="zoom:50%;" />
-
-<img src="https://s2.loli.net/2023/12/09/aVET1UGfCBxl3g2.png" alt="image-20231209002106864" style="zoom:50%;" />
-
-可见对于估计$ Eh_1(x) $，MC方法最好；对于$ Eh_2(x) $和$ Eh_3(x) $，使用柯西分布的IS方法最好。但本题在不同的参数组下方差图表现相当不同，因此前面只是一个局部结论。
-
